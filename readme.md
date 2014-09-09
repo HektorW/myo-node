@@ -3,7 +3,7 @@ A library for using the Myo in node.js.
 Currently only works in windows environment :(.
 
 ## install
-[Python 2.7][https://www.python.org/] and [node-gyp][https://github.com/TooTallNate/node-gyp/] is needed in order to build the project.
+[Python 2.7](https://www.python.org/) and [node-gyp](https://github.com/TooTallNate/node-gyp/) is needed in order to build the project.
 ```
 npm install -g node-gyp
 ```
