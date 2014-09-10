@@ -44,9 +44,7 @@ console.log('post: [' + time() + ' ]');
  * preferred API
  */
 
-var myolib = require('myo-node');
-var hub = myolib.hub('com.app.id');
-var hub = require('myo-node')('com.app.id');
+var hub = require('myo-node')('com.example.application');
 
 hub.on('myo', function(myo) {
   // Arm

@@ -4,7 +4,6 @@ var EventEmitter = require('events').EventEmitter,
     libmyo = require('./build/release/myo.node');
 
 
-
 function Myo(id) {
   this.id = id;
 }

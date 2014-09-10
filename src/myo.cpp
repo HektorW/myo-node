@@ -57,52 +57,48 @@ struct myo_data {
 
 
 
-struct myo_instance {
-  
-};
-
 
 
 // myo listener
 class DataCollector : public myo::DeviceListener
 {
 public:
-    DataCollector() {}
+  DataCollector() {}
 
-    void onOrientationData(myo::Myo* myo, uint64_t timestamp, const myo::Quaternion<float>& quat)
-    {
-      uv_rwlock_wrlock(&lock);
-      data.orientation_x = quat.x();
-      data.orientation_y = quat.y();
-      data.orientation_z = quat.z();
-      data.orientation_w = quat.w();
-      uv_rwlock_wrunlock(&lock);
-    }
+  void onOrientationData(myo::Myo* myo, uint64_t timestamp, const myo::Quaternion<float>& quat)
+  {
+    uv_rwlock_wrlock(&lock);
+    data.orientation_x = quat.x();
+    data.orientation_y = quat.y();
+    data.orientation_z = quat.z();
+    data.orientation_w = quat.w();
+    uv_rwlock_wrunlock(&lock);
+  }
 
-    void onAccelerometerData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& acc)
-    {
-      uv_rwlock_wrlock(&lock);
-      data.accelerometer_x = acc.x();
-      data.accelerometer_y = acc.y();
-      data.accelerometer_z = acc.z();
-      uv_rwlock_wrunlock(&lock);
-    }
+  void onAccelerometerData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& acc)
+  {
+    uv_rwlock_wrlock(&lock);
+    data.accelerometer_x = acc.x();
+    data.accelerometer_y = acc.y();
+    data.accelerometer_z = acc.z();
+    uv_rwlock_wrunlock(&lock);
+  }
 
-    void onGyroscopeData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& gyro)
-    {
-      uv_rwlock_wrlock(&lock);
-      data.gyroscope_x = gyro.x();
-      data.gyroscope_y = gyro.y();
-      data.gyroscope_z = gyro.z();
-      uv_rwlock_wrunlock(&lock);
-    }
+  void onGyroscopeData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& gyro)
+  {
+    uv_rwlock_wrlock(&lock);
+    data.gyroscope_x = gyro.x();
+    data.gyroscope_y = gyro.y();
+    data.gyroscope_z = gyro.z();
+    uv_rwlock_wrunlock(&lock);
+  }
 
-    void onPose(myo::Myo* myo, uint64_t timestamp, myo::Pose pose)
-    {
-      uv_rwlock_wrlock(&lock);
-      data.pose = pose;
-      uv_rwlock_wrunlock(&lock);
-    }
+  void onPose(myo::Myo* myo, uint64_t timestamp, myo::Pose pose)
+  {
+    uv_rwlock_wrlock(&lock);
+    data.pose = pose;
+    uv_rwlock_wrunlock(&lock);
+  }
 };
 
 

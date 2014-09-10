@@ -1,11 +1,8 @@
-
 var Hub = require('./hub.js');
 
-var myolib = {
+module.exports = {
   hub: function(appId) {
     var hub = new Hub(appid);
     return hub;
   }
 };
-
-module.exports = myolib;
