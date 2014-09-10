@@ -20,19 +20,19 @@ util.inherits(Hub, EventEmitter);
 
 Hub.prototype.setupConnections = function() {
   libmyo.onMyoConnect(this.onMyoConnect.bind(this));
-  libmyo.onMyoPair(this.onMyoPair.bind(this));
-  libmyo.onMyoArmRecognized(this.onMyoArmRecognized.bind(this));
+  // libmyo.onMyoPair(this.onMyoPair.bind(this));
+  // libmyo.onMyoArmRecognized(this.onMyoArmRecognized.bind(this));
 
-  libmyo.onMyoDisconnect(this.onMyoDisconnect.bind(this));
-  libmyo.onMyoUnPair(this.onMyoUnPair.bind(this));
-  libmyo.onMyoArmLost(this.onMyoArmLost.bind(this));
+  // libmyo.onMyoDisconnect(this.onMyoDisconnect.bind(this));
+  // libmyo.onMyoUnPair(this.onMyoUnPair.bind(this));
+  // libmyo.onMyoArmLost(this.onMyoArmLost.bind(this));
 
-  libmyo.onMyoPose(this.onMyoPose.bind(this));
-  libmyo.onMyoOrientationData(this.onMyoOrientationData.bind(this));
-  libmyo.onMyoAccelerationData(this.onMyoAccelerationData.bind(this));
-  libmyo.onMyoGyroscopeData(this.onMyoGyroscopeData.bind(this));
+  // libmyo.onMyoPose(this.onMyoPose.bind(this));
+  // libmyo.onMyoOrientationData(this.onMyoOrientationData.bind(this));
+  // libmyo.onMyoAccelerationData(this.onMyoAccelerationData.bind(this));
+  // libmyo.onMyoGyroscopeData(this.onMyoGyroscopeData.bind(this));
   
-  libmyo.onMyoRssi(this.onMyoRssi.bind(this));
+  // libmyo.onMyoRssi(this.onMyoRssi.bind(this));
 };
 
 Hub.prototype.close = function() {

@@ -56,6 +56,16 @@ struct myo_data {
 } data;
 
 
+struct callbacks {
+  Persistent<Function> onConnect;
+} callbacks;
+
+
+
+class NodeBindings
+{
+  
+};
 
 
 
@@ -98,6 +108,7 @@ public:
     uv_rwlock_wrlock(&lock);
     data.pose = pose;
     uv_rwlock_wrunlock(&lock);
+    uv_async_send(&async);
   }
 };
 
@@ -115,7 +126,6 @@ void DoAsync(uv_work_t* r)
       throw std::runtime_error("Unable to find a Myo!");
     }
 
-    // fprintf(stderr, "Connected to %s.\n", myo->macAddressAsString());
     std::cout << "Connected to " << myo->macAddressAsString() << std::endl;
 
     if (!myo->isTrained()) {
@@ -185,8 +195,10 @@ void AfterAsync(uv_work_t* r)
 
 
 
+
+
 // Exports
-v8::Handle<v8::Value> AddListener(const v8::Arguments& args)
+/*v8::Handle<v8::Value> AddListener(const v8::Arguments& args)
 {
   Handle<Function> ftpl = Handle<Function>::Cast(args[0]);
 
@@ -205,13 +217,49 @@ v8::Handle<v8::Value> AddListener(const v8::Arguments& args)
                 (uv_after_work_cb)AfterAsync);
 
   return Undefined();
+}*/
+
+
+v8::Handle<v8::Value> CreateHub(const v8::Arguments& args)
+{
+  if (args.Length() < 1) {
+    v8::ThrowException(v8::Exception::TypeError(String::New("First argument is not a string")));
+    return Undefined();
+  }
+
+  v8::String::AsciiValue stringValue(args[0]->ToString());
+  std::string applicationId = std::string(*stringValue);
+
+  // Setup threads
+  uv_work_t req;
+
+  uv_rwlock_init(&lock);
+  uv_async_init(uv_default_loop(), &async, ProgressUpdate);
+  uv_queue_work(uv_default_loop(), &req, DoAsync, (uv_after_work_cb)AfterAsync);
+
+  return Undefined();
+}
+
+
+Handle<Value> OnMyoConnect(const Arguments& args)
+{
+  if (args.Length() < 1 && !args[0]->IsFunction()) {
+    ThrowException(Exception::TypeError(String::New("First arguments is not a function")));
+    return Undefined();
+  }
+
+  Handle<Function> functionTemplate = Handle<Function>::Cast(args[0]);
+  callbacks.onConnect = Persistent<Function>::New(functionTemplate);
+  return Undefined();
 }
 
 
 // setup module
 void init(v8::Handle<v8::Object> exports)
 {
-  exports->Set(v8::String::NewSymbol("addListener"), v8::FunctionTemplate::New(AddListener)->GetFunction());
+  // exports->Set(v8::String::NewSymbol("addListener"), v8::FunctionTemplate::New(AddListener)->GetFunction());
+  exports->Set(String::NewSymbol("createHub"), FunctionTemplate::New(CreateHub)->GetFunction());
+  exports->Set(String::NewSymbol("onMyoConnect"), FunctionTemplate::New(OnMyoConnect)->GetFunction());
 }
 
 NODE_MODULE(myo, init)
