@@ -29,10 +29,14 @@ If everything worked properly a build folder should have been created with proje
 ## usage
 Now you can use it in your own application. Make sure that all dll are available for the built project.
 ```javascript
-var myo = require('./build/release/myo.node');
+var hub = require('./index.js')('com.example.application');
 
-myo.addListener(function(data) {
-  // use myo data
+hub.on('myo', function(myo) {
+  
+  myo.on('orienation', function(data) {
+    console.log(data.quaternion);
+  });
+
 });
 ```
 API for interfacing with the myo is in progress and will be updated.
