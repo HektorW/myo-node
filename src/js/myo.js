@@ -1,7 +1,7 @@
 
 var EventEmitter = require('events').EventEmitter,
     util = require('util'),
-    libmyo = require('./build/release/myo.node');
+    libmyo = require('../../build/release/myo.node');
 
 
 function Myo(id) {

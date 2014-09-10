@@ -1,4 +1,4 @@
-var Hub = require('./src/hub.js');
+var Hub = require('./hub.js');
 
 module.exports = {
   hub: function(appId) {

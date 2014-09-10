@@ -5,10 +5,10 @@
 		"conditions": [
 			["OS=='win'", {
 				"include_dirs": [
-					"src/lib/myo/include"
+					"include"
 				],
 				"libraries": [
-					"../src/lib/myo/lib/myo64.lib"
+					"../lib/myo64.lib"
 				]
 			}]
 		]

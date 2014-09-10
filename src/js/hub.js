@@ -1,6 +1,6 @@
 
 var EventEmitter = require('events').EventEmitter,
-    libmyo = require('./build/release/myo.node'),
+    libmyo = require('../../build/release/myo.node'),
     util = require('util'),
     myo = require('./myo.js');
 
