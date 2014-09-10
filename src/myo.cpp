@@ -14,6 +14,22 @@
 using namespace v8;
 
 
+/**
+ * Questions
+ * 
+ * runOnce or run(for a set time)
+ * report new values to js on each event or stack events and fire at once
+ *
+ * preferably use runOnce and fire events at each callback
+ */
+
+/**
+ * TODO
+ *
+ * - might need to generate unique ids for each myo and couple them with myo instances memory adress
+ */
+
+
 
 void DoAsync(uv_work_t*);
 void ProgressUpdate(uv_async_t*, int);
@@ -40,6 +56,10 @@ struct myo_data {
 } data;
 
 
+
+struct myo_instance {
+  
+};
 
 
 
@@ -162,9 +182,6 @@ void AfterAsync(uv_work_t* r)
 
   uv_close((uv_handle_t*) &async, 0);
 }
-
-
-
 
 
 
