@@ -1,7 +1,7 @@
 {
 	"targets": [{
 		"target_name": "myo",
-		"sources": ["src/c/myo.cpp"],
+		"sources": ["src/c/main.cpp"],
 		"conditions": [
 			["OS=='win'", {
 				"include_dirs": [

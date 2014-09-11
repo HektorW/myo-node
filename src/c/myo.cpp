@@ -11,6 +11,10 @@
 
 #include <string>
 
+
+#include "NodeBindings.cpp"
+
+
 using namespace v8;
 
 
@@ -39,6 +43,7 @@ void AfterAsync(uv_work_t*);
 // Global vars
 Persistent<Function> persist;
 uv_async_t async;
+uv_async_t async_foo;
 uv_rwlock_t lock;
 
 
@@ -61,11 +66,6 @@ struct callbacks {
 } callbacks;
 
 
-
-class NodeBindings
-{
-  
-};
 
 
 
@@ -182,6 +182,11 @@ void ProgressUpdate(uv_async_t* handle, int status)
   persist->Call(Context::GetCurrent()->Global(), argc, argv);
 }
 
+void FooAsync(uv_async_t* handle, int status)
+{
+  
+}
+
 void AfterAsync(uv_work_t* r)
 { 
   fprintf(stderr, "Thread closed\n");
@@ -235,6 +240,7 @@ v8::Handle<v8::Value> CreateHub(const v8::Arguments& args)
 
   uv_rwlock_init(&lock);
   uv_async_init(uv_default_loop(), &async, ProgressUpdate);
+  uv_async_init(uv_default_loop(), &async_foo, FooAsync);
   uv_queue_work(uv_default_loop(), &req, DoAsync, (uv_after_work_cb)AfterAsync);
 
   return Undefined();
