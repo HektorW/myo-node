@@ -56,8 +56,14 @@ Hub.prototype.onMyoConnect = function(data) {
   });
 };
 
-Hub.prototype.onMyoPair = function(data) {};
-Hub.prototype.onMyoArmRecognized = function(data) {};
+Hub.prototype.onMyoPair = function(data) {
+  var myo = this.getMyo(data.myoId);
+  if (myo) { myo.emit('pair', { timestamp: data.timestamp }); }
+};
+Hub.prototype.onMyoArmRecognized = function(data) {
+  var myo = this.getMyo(data.myoId);
+  if (myo) { myo.emit('arm', { timestamp: data.timestamp }); }
+};
 
 Hub.prototype.onMyoDisconnect = function(data) {
   var myo = this.getMyo(data.myoId);
@@ -84,11 +90,43 @@ Hub.prototype.onMyoPose = function(data) {
   }
 };
 
-Hub.prototype.onMyoOrientationData = function(data) {};
-Hub.prototype.onMyoAccelerationData = function(data) {};
-Hub.prototype.onMyoGyroscopeData = function(data) {};
+Hub.prototype.onMyoOrientationData = function(data) {
+  var myo = this.getMyo(data.myoId);
+  if (myo) {
+    myo.emit('orientaion', {
+      timestamp: data.timestamp,
+      orientaion: data.orientaion
+    });
+  }
+};
+Hub.prototype.onMyoAccelerationData = function(data) {
+  var myo = this.getMyo(data.myoId);
+  if (myo) {
+    myo.emit('acceleration', {
+      timestamp: data.timestamp,
+      acceleration: data.acceleration
+    });
+  }
+};
+Hub.prototype.onMyoGyroscopeData = function(data) {
+  var myo = this.getMyo(data.myoId);
+  if (myo) {
+    myo.emit('gyroscope', {
+      timestamp: data.timestamp,
+      gyroscope: data.gyroscope
+    });
+  }
+};
 
-Hub.prototype.onMyoRssi = function(data) {};
+Hub.prototype.onMyoRssi = function(data) {
+  var myo = this.getMyo(data.myoId);
+  if (myo) {
+    myo.emit('rssi', {
+      timestamp: data.timestamp,
+      rssi: data.rssi
+    });
+  }
+};
 
 
 // Private methods
