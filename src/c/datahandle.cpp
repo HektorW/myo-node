@@ -18,8 +18,7 @@ public:
 
   DataHandle()
     : callback(NULL)
-  {
-  }
+  {}
 
   Handle<Value> getData()
   {
@@ -44,9 +43,33 @@ public:
     if (values) delete values;
     values = 0;
   }
+
+  Handle<Value> getData()
+  {
+    Local<Object> obj = Object::New();
+
+    const std::string names[4] = {"x", "y", "z", "w"};
+    for (int i = 0; i < this->count; ++i) {
+      obj->Set(String::NewSymbol(names[i]), Number::New(this->values[i]));
+    }
+
+    return obj;
+  }
 };
 
-// class PoseDataHandle : public DataHandle
+class PoseDataHandle : public DataHandle {
+public:
+  std::string pose;
+  std::string name;
+
+  PoseDataHandle() : name("pose")
+  {}
+
+  Handle<Value> getData()
+  {
+    return String::NewSymbol(this->pose);
+  }
+};
 
 
 #endif
