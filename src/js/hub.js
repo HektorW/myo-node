@@ -19,7 +19,9 @@ util.inherits(Hub, EventEmitter);
 
 
 Hub.prototype.setupConnections = function() {
-  libmyo.onMyoConnect(this.onMyoConnect.bind(this));
+  libmyo.addListener('connect', this.onMyoConnect.bind(this));
+
+  // libmyo.onMyoConnect(this.onMyoConnect.bind(this));
   // libmyo.onMyoPair(this.onMyoPair.bind(this));
   // libmyo.onMyoArmRecognized(this.onMyoArmRecognized.bind(this));
 
@@ -33,6 +35,8 @@ Hub.prototype.setupConnections = function() {
   // libmyo.onMyoGyroscopeData(this.onMyoGyroscopeData.bind(this));
   
   // libmyo.onMyoRssi(this.onMyoRssi.bind(this));
+
+  libmyo.start();
 };
 
 Hub.prototype.close = function() {
