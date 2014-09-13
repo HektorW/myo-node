@@ -11,3 +11,6 @@ var test = require('./build/release/myo.node');
 test.foo(function(data) {
   console.log(data);
 });
+test.bar(function(data) {
+  console.log(data);
+});
