@@ -6,11 +6,6 @@ hub.on('myo', function(myo) {
   console.log('new myo from hub');
 });*/
 
-var test = require('./build/release/myo.node');
+var test = require('./build/Release/myo.node');
 
-test.foo(function(data) {
-  console.log(data);
-});
-test.bar(function(data) {
-  console.log(data);
-});
+test.stop();

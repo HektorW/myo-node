@@ -1,7 +1,7 @@
 #ifndef MYO_LISTENER
 #define MYO_LISTENER
 
-#include <myo.hpp>
+#include <myo/myo.hpp>
 #include <uv.h>
 
 #include <map>

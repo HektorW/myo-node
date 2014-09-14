@@ -7,10 +7,11 @@
 #include <v8.h>
 #include <uv.h>
 
-#include <myo.hpp>
+#include <myo/myo.hpp>
 
 #include <string>
 #include <map>
+#include <queue>
 
 #include "eventhandle.cpp"
 #include "myoListener.cpp"
@@ -51,13 +52,12 @@ bool thread_running = false;
 
 void threadLoop(uv_work_t* thread)
 {
-  /*try {
-    myo::Myo* myo = hub->waitForAnyMyo(10000);
+  try {
+    myo::Myo* myo = hub->waitForMyo(10000);
 
     if (!myo) throw std::runtime_error("Unable to find any myo device.");
-    if (!myo->isTrained()) throw std::runtime_error("Myo device has not been trained. Do you need to run the trainer?");
 
-    MyoListener listener(eventHandles);
+    MyoListener listener(&eventHandles);
     hub->addListener(&listener);
 
     while(thread_running)
@@ -68,7 +68,7 @@ void threadLoop(uv_work_t* thread)
   catch(const std::exception& e)
   {
     fprintf(stderr, "Error, exception caught: %s\n", e.what());
-  }*/
+  }
 }
 void closeThread(uv_work_t* thread)
 {
@@ -76,14 +76,44 @@ void closeThread(uv_work_t* thread)
 }
 
 void postToMainThread(uv_async_t* handle, int status) {
-  // EventHandle* temp = getHandleFromAsync(handle);
+  EventHandle* eventHandle = getHandleFromAsync(handle);
 
-  // if (!temp) return;
+  if (!eventHandle) return;
 
-  // set data
+  while (!eventHandle->data.empty())
+  {
+    EventData data = eventHandle->data.front();
+    eventHandle->data.pop();
 
-  // Local<Value> args[1] = { String::NewSymbol(temp->name.c_str()) };
-  // temp->callback->Call(Context::GetCurrent()->Global(), 1, args);
+
+    Local<Object> argumentObject = Object::New();
+
+    argumentObject->Set(String::NewSymbol("myoId"), String::NewSymbol(data.myo_id.c_str()));
+    argumentObject->Set(String::NewSymbol("timestamp"), Number::New(data.timestamp));
+
+    Handle<Value> extra = data.getData();
+
+    if (extra != Undefined())
+    {
+      argumentObject->Set(String::NewSymbol(eventHandle->type.c_str()), extra);
+    }
+
+
+    Local<Value> args[1] = { argumentObject };
+    eventHandle->callback->Call(Context::GetCurrent()->Global(), 1, args);
+  }
+}
+
+
+// Utils
+EventHandle* getHandleFromAsync(uv_async_t* handle)
+{
+  for(map<string, EventHandle>::iterator iter = eventHandles.begin(); iter != eventHandles.end(); ++iter)
+  {
+    if (&iter->second.async_handle == handle)
+      return &iter->second;
+  }
+  return 0;
 }
 
 
@@ -95,27 +125,11 @@ void postToMainThread(uv_async_t* handle, int status) {
 Handle<Value> addListener(const Arguments& args)
 {
   // add error checking
-  /*std::string type = std::string(*v8::String::AsciiValue(args[0]->ToString()));
+  std::string type = std::string(*v8::String::AsciiValue(args[0]->ToString()));
   Persistent<Function> callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
 
-  EventHandle handle;
-  switch (type) {
-    case "connect":
-    case "disconnect":
-      handle = EventHandle();
-      break;
-    case "orientation":
-      handle = VectorEventHandle(type, 4);
-      break;
-    case "gyroscope":
-      handle = VectorEventHandle(type, 3);
-      break;
-  }
-
-  handle.callback = callback;
-  handle.type = type;
-
-  eventHandles.add(type, handle);*/
+  EventHandle handle(type, callback);
+  eventHandles[type] = handle;
 
   return Undefined();
 }
@@ -125,8 +139,7 @@ Handle<Value> start(const Arguments& args)
   if (!thread_running)
   {
     string appId = string(*v8::String::AsciiValue(args[0]->ToString()));
-    // hub = new myo::Hub(appId);
-    hub = new myo::Hub();
+    hub = new myo::Hub(appId);
 
     uv_work_t thread;
 

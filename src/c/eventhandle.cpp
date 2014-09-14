@@ -53,7 +53,7 @@ public:
 
   Handle<Value> getData()
   {
-    Local<Object> obj = Object::New();
+    Handle<Object> obj = Object::New();
 
     const string names[4] = {"x", "y", "z", "w"};
     for (int i = 0; i < this->count; ++i) {
@@ -93,6 +93,8 @@ public:
   queue<EventData> data;
 
   EventHandle() {}
+  EventHandle(string type, Persistent<Function> callback) : type(type), callback(callback) {}
+
   ~EventHandle() {}
 };
 
