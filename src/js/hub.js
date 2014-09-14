@@ -7,9 +7,7 @@ var EventEmitter = require('events').EventEmitter,
 
 
 function Hub(appId) {
-  this.appId = appId;
-  libmyo.createHub(appId);
-
+  this.appId = appId || 'com.default.lol.yolo.nofilter';
   this.myos = {};
 
   this.setupConnections();
@@ -36,7 +34,7 @@ Hub.prototype.setupConnections = function() {
   
   // libmyo.onMyoRssi(this.onMyoRssi.bind(this));
 
-  libmyo.start();
+  libmyo.start(this.appId);
 };
 
 Hub.prototype.close = function() {
