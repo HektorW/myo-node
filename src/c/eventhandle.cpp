@@ -12,20 +12,14 @@ using namespace v8;
 using namespace std;
 
 
-// class VectorEventData : public EventData;
-// class PoseEventData : public EventData;
 
-
-
-class EventData {
+class EventData
+{
 public:
   string myo_id;
   uint64_t timestamp;
 
   EventData() {}
-  EventData(string myo_id, uint64_t timestamp)
-    : myo_id(myo_id), timestamp(timestamp)
-  {}
 
   Handle<Value> getData()
   {
@@ -34,14 +28,13 @@ public:
 };
 
 
-class VectorEventData : public EventData {
+class VectorEventData : public EventData
+{
 public:
   float* values;
   int count;
-  string name;
 
-  VectorEventData(string name, float* values, int count) {
-    this->name = name;
+  VectorEventData(float* values, int count) {
     this->values = values;
     this->count = count;
   }
@@ -64,13 +57,12 @@ public:
   }
 };
 
-class PoseEventData : public EventData {
+class PoseEventData : public EventData
+{
 public:
   string pose;
-  string name;
 
-  PoseEventData() : name("pose")
-  {}
+  PoseEventData(string pose) : pose(pose) {}
 
   Handle<Value> getData()
   {
