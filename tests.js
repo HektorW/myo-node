@@ -6,6 +6,9 @@ hub.on('myo', function(myo) {
   console.log('new myo from hub');
 });*/
 
-var test = require('./build/Release/myo.node');
+// var test = require('./build/Release/myo.node');
+var hub = require('./index.js')('se.hektorw.application');
 
-test.stop();
+hub.on('myo', function(myo) {
+  console.log('new myo connected');
+});

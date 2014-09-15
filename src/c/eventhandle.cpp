@@ -57,16 +57,30 @@ public:
   }
 };
 
-class PoseEventData : public EventData
+class StringEventData : public EventData
 {
 public:
-  string pose;
+  string value;
 
-  PoseEventData(string pose) : pose(pose) {}
+  StringEventData(string value) : value(value) {}
 
   Handle<Value> getData()
   {
-    return String::NewSymbol(this->pose.c_str());
+    return String::NewSymbol(this->value.c_str());
+  }
+};
+
+
+class NumberEventData: public EventData
+{
+public:
+  int value;
+
+  NumberEventData(int value) : value(value) {}
+
+  Handle<Value> getData()
+  {
+    return Number::New(this->value);
   }
 };
 

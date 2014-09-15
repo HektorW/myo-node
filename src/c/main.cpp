@@ -31,11 +31,12 @@ void postToMainThread(uv_async_t*, int);
 
 // utils
 EventHandle* getHandleFromAsync(uv_async_t* handle);
+string getStringArgument(const Arguments& args, int index);
 
 // exports
-Handle<Value> addListener(const Arguments* args);
-Handle<Value> start(const Arguments* args);
-Handle<Value> stop(const Arguments* args);
+Handle<Value> addListener(const Arguments& args);
+Handle<Value> start(const Arguments& args);
+Handle<Value> stop(const Arguments& args);
 
 
 
@@ -115,6 +116,15 @@ EventHandle* getHandleFromAsync(uv_async_t* handle)
   }
   return 0;
 }
+string getStringArgument(const Arguments& args, int index)
+{
+  if (args.Length() < index || !args[index]->IsString())
+  {
+    // ThrowException(Exception::TypeError(String::New(string("Argument nr ") + to_string(index) + string(" is not a string"))));
+    ThrowException(Exception::TypeError(String::New("invalid arguments")));
+  }
+  return string(*v8::String::AsciiValue(args[0]->ToString()));;
+}
 
 
 
@@ -124,8 +134,12 @@ EventHandle* getHandleFromAsync(uv_async_t* handle)
 // addListener
 Handle<Value> addListener(const Arguments& args)
 {
+  printf("c++, exports, addListener\n");
+
+
+
   // add error checking
-  std::string type = std::string(*v8::String::AsciiValue(args[0]->ToString()));
+  string type = getStringArgument(args, 0);
   Persistent<Function> callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
 
   EventHandle handle(type, callback);
@@ -136,23 +150,31 @@ Handle<Value> addListener(const Arguments& args)
 
 Handle<Value> start(const Arguments& args)
 {
+  printf("c++, exports, start\n");
   if (!thread_running)
   {
-    string appId = string(*v8::String::AsciiValue(args[0]->ToString()));
-    hub = new myo::Hub(appId);
+    try 
+    {
+      string appId = string(*v8::String::AsciiValue(args[0]->ToString()));
+      hub = new myo::Hub(appId);
 
-    uv_work_t thread;
+      uv_work_t thread;
 
-    for (map<string, EventHandle>::iterator iter = eventHandles.begin(); iter != eventHandles.end(); ++iter) {
-      EventHandle handle = iter->second;
+      for (map<string, EventHandle>::iterator iter = eventHandles.begin(); iter != eventHandles.end(); ++iter) {
+        EventHandle handle = iter->second;
 
-      uv_rwlock_init(&handle.lock);
-      uv_async_init(uv_default_loop(), &handle.async_handle, postToMainThread);
+        uv_rwlock_init(&handle.lock);
+        uv_async_init(uv_default_loop(), &handle.async_handle, postToMainThread);
+      }
+
+      uv_queue_work(uv_default_loop(), &thread, threadLoop, (uv_after_work_cb)closeThread);
+
+      thread_running = true; 
     }
-
-    uv_queue_work(uv_default_loop(), &thread, threadLoop, (uv_after_work_cb)closeThread);
-
-    thread_running = true; 
+    catch(const std::exception& e)
+    {
+      fprintf(stderr, "Error, exception caught: %s\n", e.what());
+    }
   }
 
   return Undefined();
@@ -160,6 +182,8 @@ Handle<Value> start(const Arguments& args)
 
 Handle<Value> stop(const Arguments& args)
 {
+  printf("c++, exports, stop\n");
+
   thread_running = false;
   return Undefined();
 }
