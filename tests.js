@@ -11,4 +11,8 @@ var hub = require('./index.js')('se.hektorw.application');
 
 hub.on('myo', function(myo) {
   console.log('new myo connected');
+
+  myo.on('orientaion', function(data) {
+    console.log(data);
+  });
 });

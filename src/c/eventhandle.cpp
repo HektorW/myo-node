@@ -40,8 +40,9 @@ public:
   }
   ~VectorEventData()
   {
-    if (values) delete[] values;
-    values = 0;
+    // if (values != 0)
+      // delete[] values;
+    // values = 0;
   }
 
   Handle<Value> getData()

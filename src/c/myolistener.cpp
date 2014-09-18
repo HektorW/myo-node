@@ -33,6 +33,11 @@ private:
   void addEventData(myo::Myo* myo, uint64_t timestamp, std::string type, EventData eventData)
   {
     EventHandle* eventHandle = this->getEventHandle(type);
+
+    if (eventHandle == 0) {
+      return;
+    }
+
     std::string myo_id = this->myo_ids[myo];
 
     eventData.myo_id = myo_id;

@@ -46,6 +46,7 @@ Handle<Value> stop(const Arguments& args);
 myo::Hub* hub;
 map<string, EventHandle> eventHandles;
 bool thread_running = false;
+uv_work_t thread;
 
 
 
@@ -58,12 +59,15 @@ void threadLoop(uv_work_t* thread)
 
     if (!myo) throw std::runtime_error("Unable to find any myo device.");
 
+    printf("myo connected, starting listening loop\n");
+
     MyoListener listener(&eventHandles);
     hub->addListener(&listener);
 
+    printf("starting loop\n");
     while(thread_running)
     {
-      hub->run(33);
+      hub->runOnce(33);
     }
   }
   catch(const std::exception& e)
@@ -73,6 +77,7 @@ void threadLoop(uv_work_t* thread)
 }
 void closeThread(uv_work_t* thread)
 {
+  printf("closing thread\n");
   delete hub;
 }
 
@@ -137,7 +142,6 @@ Handle<Value> addListener(const Arguments& args)
   printf("c++, exports, addListener\n");
 
 
-
   // add error checking
   string type = getStringArgument(args, 0);
   Persistent<Function> callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
@@ -157,8 +161,6 @@ Handle<Value> start(const Arguments& args)
     {
       string appId = string(*v8::String::AsciiValue(args[0]->ToString()));
       hub = new myo::Hub(appId);
-
-      uv_work_t thread;
 
       for (map<string, EventHandle>::iterator iter = eventHandles.begin(); iter != eventHandles.end(); ++iter) {
         EventHandle handle = iter->second;
