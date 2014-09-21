@@ -27,15 +27,15 @@ private:
     std::map<std::string, EventHandle>::iterator iter = bindings->find(type);
     if (iter == bindings->end())
       return 0;
-    return &iter->second;    
+    return &iter->second;
   }
 
-  void addEventData(myo::Myo* myo, uint64_t timestamp, std::string type, EventData eventData)
+  void addEventData(myo::Myo* myo, uint64_t timestamp, std::string type, EventData *eventData)
   {
     std::map<myo::Myo*, std::string>::iterator iter = this->myo_ids.find(myo);
     if (iter == this->myo_ids.end()) {
       this->myo_ids[myo] = this->GUID();
-      this->addEventData(myo, timestamp, "connect", EventData());
+      this->addEventData(myo, timestamp, "connect", new EventData());
     }
 
     EventHandle* eventHandle = this->getEventHandle(type);
@@ -47,8 +47,8 @@ private:
 
     std::string myo_id = this->myo_ids[myo];
 
-    eventData.myo_id = myo_id;
-    eventData.timestamp = timestamp;
+    eventData->myo_id = myo_id;
+    eventData->timestamp = timestamp;
 
     // uv_rwlock_wrlock(&eventHandle->lock);
     eventHandle->data.push(eventData);
@@ -69,25 +69,25 @@ public:
   }
   void onPair(myo::Myo* myo, uint64_t timestamp)
   {
-    this->addEventData(myo, timestamp, "pair", EventData());
+    this->addEventData(myo, timestamp, "pair", new EventData());
   }
   void onArmRecognized(myo::Myo* myo, uint64_t timestamp, myo::Arm arm, myo::XDirection direction)
   {
-    this->addEventData(myo, timestamp, "arm", EventData());
+    this->addEventData(myo, timestamp, "arm", new EventData());
   }
 
   // Disconnects
   void onDisconnect(myo::Myo* myo, uint64_t timestamp)
   {
-    this->addEventData(myo, timestamp, "disconnect", EventData());
+    this->addEventData(myo, timestamp, "disconnect", new EventData());
   }
   void onUnpair(myo::Myo* myo, uint64_t timestamp)
   {
-    this->addEventData(myo, timestamp, "unpair", EventData());
+    this->addEventData(myo, timestamp, "unpair", new EventData());
   }
   void onArmlost(myo::Myo* myo, uint64_t timestamp)
   {
-    this->addEventData(myo, timestamp, "armlost", EventData());
+    this->addEventData(myo, timestamp, "armlost", new EventData());
   }
 
   // Orientaion
@@ -95,32 +95,32 @@ public:
   {
     const int count = 4;
     float values[count] = { quat.x(), quat.y(), quat.z(), quat.w() };
-    this->addEventData(myo, timestamp, "orientation", VectorEventData(values, count));
+    this->addEventData(myo, timestamp, "orientation", new VectorEventData(values, count));
   }
   void onGyroscopeData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& vec)
   {
     const int count = 3;
     float values[count] = { values[0] = vec.x(), values[1] = vec.y(), values[2] = vec.z() };
-    this->addEventData(myo, timestamp, "gyroscope", VectorEventData(values, count));
+    this->addEventData(myo, timestamp, "gyroscope", new VectorEventData(values, count));
   }
   void onAccelerationData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& vec)
   {
     const int count = 3;
     float values[count] = { values[0] = vec.x(), values[1] = vec.y(), values[2] = vec.z() };
-    this->addEventData(myo, timestamp, "acceleration", VectorEventData(values, count));
+    this->addEventData(myo, timestamp, "acceleration", new VectorEventData(values, count));
   }
 
 
   // Pose
   void onPose(myo::Myo* myo, uint64_t timestamp, myo::Pose pose)
   {
-    this->addEventData(myo, timestamp, "pose", StringEventData(pose.toString()));
+    this->addEventData(myo, timestamp, "pose", new StringEventData(pose.toString()));
   }
 
   // Rssi
   void onRssi(myo::Myo* myo, uint64_t timestamp, int8_t rssi)
   {
-    this->addEventData(myo, timestamp, "rssi", NumberEventData(rssi));
+    this->addEventData(myo, timestamp, "rssi", new NumberEventData(rssi));
   }
 };
 

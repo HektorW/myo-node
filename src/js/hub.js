@@ -38,7 +38,7 @@ Hub.prototype.setupConnections = function() {
 };
 
 Hub.prototype.close = function() {
-  libmyo.close(); // #not implemented
+  libmyo.stop(); // #not implemented
 };
 
 

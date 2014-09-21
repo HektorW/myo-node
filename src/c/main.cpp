@@ -22,7 +22,6 @@ using namespace std;
 
 
 
-
 // # Defintions
 // thread
 void threadLoop(uv_work_t*);
@@ -88,16 +87,15 @@ void postToMainThread(uv_async_t* handle, int status) {
 
   while (!eventHandle->data.empty())
   {
-    EventData data = eventHandle->data.front();
+    EventData* data = eventHandle->data.front();
     eventHandle->data.pop();
-
-
+    
     Local<Object> argumentObject = Object::New();
 
-    argumentObject->Set(String::NewSymbol("myoId"), String::NewSymbol(data.myo_id.c_str()));
-    argumentObject->Set(String::NewSymbol("timestamp"), Number::New(data.timestamp));
+    argumentObject->Set(String::NewSymbol("myoId"), String::NewSymbol(data->myo_id.c_str()));
+    argumentObject->Set(String::NewSymbol("timestamp"), Number::New(data->timestamp));
 
-    Handle<Value> extra = data.getData();
+    Handle<Value> extra = data->getData();
 
     if (extra != Undefined())
     {

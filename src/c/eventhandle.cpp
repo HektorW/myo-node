@@ -34,20 +34,16 @@ public:
   float* values;
   int count;
 
-  VectorEventData(float* values, int count) {
+  VectorEventData(float* values, int count)
+  {
     this->values = values;
     this->count = count;
   }
   ~VectorEventData()
-  {
-    // if (values != 0)
-      // delete[] values;
-    // values = 0;
-  }
+  {}
 
   Handle<Value> getData()
   {
-    printf("VectorEventData.getData\n");
     Handle<Object> obj = Object::New();
 
     const string names[4] = {"x", "y", "z", "w"};
@@ -98,7 +94,7 @@ public:
   uv_rwlock_t lock;
   string type;
 
-  queue<EventData> data;
+  queue<EventData*> data;
 
   EventHandle() {}
   EventHandle(string type, Persistent<Function> callback) : type(type), callback(callback) {}
