@@ -32,9 +32,16 @@ private:
 
   void addEventData(myo::Myo* myo, uint64_t timestamp, std::string type, EventData eventData)
   {
+    std::map<myo::Myo*, std::string>::iterator iter = this->myo_ids.find(myo);
+    if (iter == this->myo_ids.end()) {
+      this->myo_ids[myo] = this->GUID();
+      this->addEventData(myo, timestamp, "connect", EventData());
+    }
+
     EventHandle* eventHandle = this->getEventHandle(type);
 
     if (eventHandle == 0) {
+      printf("no eventhandle for event %s\n", type);
       return;
     }
 
@@ -43,9 +50,9 @@ private:
     eventData.myo_id = myo_id;
     eventData.timestamp = timestamp;
 
-    uv_rwlock_wrlock(&eventHandle->lock);
+    // uv_rwlock_wrlock(&eventHandle->lock);
     eventHandle->data.push(eventData);
-    uv_rwlock_wrunlock(&eventHandle->lock);
+    // uv_rwlock_wrunlock(&eventHandle->lock);
 
     uv_async_send(&eventHandle->async_handle);
   }
@@ -57,9 +64,8 @@ public:
   // Connections
   void onConnect(myo::Myo* myo, uint64_t timestamp)
   {
-    myo_ids[myo] = this->GUID();
-
-    this->addEventData(myo, timestamp, "connect", EventData());
+    // myo_ids[myo] = this->GUID();
+    // this->addEventData(myo, timestamp, "connect", EventData());
   }
   void onPair(myo::Myo* myo, uint64_t timestamp)
   {

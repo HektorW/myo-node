@@ -21,7 +21,7 @@ public:
 
   EventData() {}
 
-  Handle<Value> getData()
+  virtual Handle<Value> getData()
   {
     return Undefined();
   }
@@ -47,6 +47,7 @@ public:
 
   Handle<Value> getData()
   {
+    printf("VectorEventData.getData\n");
     Handle<Object> obj = Object::New();
 
     const string names[4] = {"x", "y", "z", "w"};

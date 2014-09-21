@@ -10,9 +10,9 @@ hub.on('myo', function(myo) {
 var hub = require('./index.js')('se.hektorw.application');
 
 hub.on('myo', function(myo) {
-  console.log('new myo connected');
+  console.log('node, myo connected');
 
-  myo.on('orientaion', function(data) {
+  myo.on('orientation', function(data) {
     console.log(data);
   });
 });

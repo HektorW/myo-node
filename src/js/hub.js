@@ -2,7 +2,7 @@
 var EventEmitter = require('events').EventEmitter,
     libmyo = require('../../build/release/myo.node'),
     util = require('util'),
-    myo = require('./myo.js');
+    Myo = require('./myo.js');
 
 
 
@@ -17,7 +17,7 @@ util.inherits(Hub, EventEmitter);
 
 
 Hub.prototype.setupConnections = function() {
-  libmyo.addListener('connect', this.onMyoConnect.bind(this));
+  // libmyo.addListener('connect', this.onMyoConnect.bind(this));
 
   libmyo.addListener('connect', this.onMyoConnect.bind(this));
   libmyo.addListener('pair', this.onMyoPair.bind(this));
@@ -51,8 +51,8 @@ Hub.prototype.onMyoConnect = function(data) {
 
   this.myos[data.myoId] = myo;
 
-  this.emit('myo', {
-    myo: myo,
+  this.emit('myo', myo);
+  myo.emit('connect', {
     timestamp: data.timestamp,
     firmwareVersion: data.firmwareVersion
   });
@@ -95,9 +95,9 @@ Hub.prototype.onMyoPose = function(data) {
 Hub.prototype.onMyoOrientationData = function(data) {
   var myo = this.getMyo(data.myoId);
   if (myo) {
-    myo.emit('orientaion', {
+    myo.emit('orientation', {
       timestamp: data.timestamp,
-      orientaion: data.orientaion
+      orientation: data.orientation
     });
   }
 };
@@ -134,7 +134,7 @@ Hub.prototype.onMyoRssi = function(data) {
 // Private methods
 Hub.prototype.getMyo = function(myoId) {
   for (var id in this.myos) {
-    if (!this.hasOwnProperty(id)) continue;
+    if (!this.myos.hasOwnProperty(id)) continue;
 
     if (id === myoId) {
       return this.myos[id];

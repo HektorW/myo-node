@@ -59,25 +59,25 @@ void threadLoop(uv_work_t* thread)
 
     if (!myo) throw std::runtime_error("Unable to find any myo device.");
 
-    printf("myo connected, starting listening loop\n");
+    printf("c++, myo connected, starting listening loop\n");
 
     MyoListener listener(&eventHandles);
     hub->addListener(&listener);
 
-    printf("starting loop\n");
+    printf("c++, starting loop\n");
     while(thread_running)
     {
-      hub->runOnce(33);
+      hub->run(33);
     }
   }
   catch(const std::exception& e)
   {
-    fprintf(stderr, "Error, exception caught: %s\n", e.what());
+    fprintf(stderr, "c++, Error, exception caught: %s\n", e.what());
   }
 }
 void closeThread(uv_work_t* thread)
 {
-  printf("closing thread\n");
+  printf("c++, closing thread\n");
   delete hub;
 }
 
@@ -103,7 +103,6 @@ void postToMainThread(uv_async_t* handle, int status) {
     {
       argumentObject->Set(String::NewSymbol(eventHandle->type.c_str()), extra);
     }
-
 
     Local<Value> args[1] = { argumentObject };
     eventHandle->callback->Call(Context::GetCurrent()->Global(), 1, args);
@@ -139,15 +138,11 @@ string getStringArgument(const Arguments& args, int index)
 // addListener
 Handle<Value> addListener(const Arguments& args)
 {
-  printf("c++, exports, addListener\n");
-
-
   // add error checking
   string type = getStringArgument(args, 0);
   Persistent<Function> callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
 
-  EventHandle handle(type, callback);
-  eventHandles[type] = handle;
+  eventHandles[type] = EventHandle(type, callback);
 
   return Undefined();
 }
@@ -163,10 +158,10 @@ Handle<Value> start(const Arguments& args)
       hub = new myo::Hub(appId);
 
       for (map<string, EventHandle>::iterator iter = eventHandles.begin(); iter != eventHandles.end(); ++iter) {
-        EventHandle handle = iter->second;
+        EventHandle* handle = &iter->second;
 
-        uv_rwlock_init(&handle.lock);
-        uv_async_init(uv_default_loop(), &handle.async_handle, postToMainThread);
+        uv_rwlock_init(&handle->lock);
+        uv_async_init(uv_default_loop(), &handle->async_handle, postToMainThread);
       }
 
       uv_queue_work(uv_default_loop(), &thread, threadLoop, (uv_after_work_cb)closeThread);
