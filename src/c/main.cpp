@@ -104,6 +104,8 @@ void postToMainThread(uv_async_t* handle, int status) {
 
     Local<Value> args[1] = { argumentObject };
     eventHandle->callback->Call(Context::GetCurrent()->Global(), 1, args);
+
+    delete data;
   }
 }
 
